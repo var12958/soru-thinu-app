@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SORU MUKKIYAM AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">SORU MUKKIYAM AI</div>
+        <div class="subtitle">THINRATHA EVALO NU THERINJU THIINU :)</div>
+    </header>
+
+    <main>
+        <!-- Upload Section -->
+        <section id="upload-section" class="card">
+            <div class="drop-zone" id="drop-zone">
+                <div class="dashed-border">
+                    <img src="assets/upload_illustration.png" alt="Upload Food" class="upload-img">
+                    <button class="upload-btn" id="upload-btn">Upload Photo</button>
+                    <p class="supporting-text">JPG, PNG. One food item per photo.</p>
+                </div>
+                <input type="file" id="file-input" accept="image/png, image/jpeg" hidden>
+            </div>
+        </section>
+
+        <!-- Loading Section -->
+        <section id="loading-section" class="card hidden">
+            <div class="stickman-container">
+                <img src="assets/stickman_dancing.png" alt="Processing..." class="dancing-stickman">
+            </div>
+            <p class="loading-text">Analyzing your Soru...</p>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results-section" class="card hidden">
+            <div class="preview-container">
+                <img id="food-preview" src="" alt="Food Preview">
+            </div>
+            
+            <div class="food-name-container">
+                <input type="text" id="food-name" value="Detected Food" class="food-name-input">
+                <span class="edit-icon">✎</span>
+            </div>
+
+            <div class="nutrition-panel">
+                <div class="macro-row">
+                    <div class="macro-item">
+                        <span class="macro-value" id="calories-val">0</span>
+                        <span class="macro-label">Kcal</span>
+                    </div>
+                </div>
+                
+                <div class="nutrients-grid">
+                    <div class="nutrient-card protein">
+                        <span class="icon">🥩</span>
+                        <span class="label">Protein</span>
+                        <span class="value" id="protein-val">0g</span>
+                    </div>
+                    <div class="nutrient-card carbs">
+                        <span class="icon">🍞</span>
+                        <span class="label">Carbs</span>
+                        <span class="value" id="carbs-val">0g</span>
+                    </div>
+                    <div class="nutrient-card fats">
+                        <span class="icon">🥑</span>
+                        <span class="label">Fats</span>
+                        <span class="value" id="fats-val">0g</span>
+                    </div>
+                </div>
+
+                <div class="micronutrients-table-container">
+                    <table class="micronutrients-table">
+                        <thead>
+                            <tr>
+                                <th>Micronutrient</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="micronutrients-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <button class="reset-btn" id="reset-btn">Analyze Another</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

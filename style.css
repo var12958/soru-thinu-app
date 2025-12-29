@@ -1,0 +1,312 @@
+:root {
+    --primary: #B0C5A4;  /* Backgrounds/Main */
+    --secondary: #D37676; /* Buttons/Accents */
+    --tertiary: #EBC49F; /* Cards/Sections */
+    --quaternary: #F1EF99; /* Highlights */
+    --text-dark: #2c3e50;
+    --text-light: #ffffff;
+    --font-main: 'Outfit', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--primary);
+    color: var(--text-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+}
+
+.logo {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 0px var(--quaternary);
+}
+
+.subtitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #4a5d4a; /* Darker shade of primary for contrast */
+    background-color: var(--quaternary);
+    padding: 0.2rem 1rem;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+main {
+    width: 100%;
+    max-width: 480px; /* Mobile app feel */
+}
+
+/* CARDS */
+.card {
+    background-color: #fff;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    transition: transform 0.3s ease;
+}
+
+.hidden {
+    display: none;
+}
+
+/* UPLOAD SECTION */
+.drop-zone {
+    text-align: center;
+    cursor: pointer;
+}
+
+.dashed-border {
+    border: 3px dashed var(--tertiary);
+    border-radius: 16px;
+    padding: 2rem;
+    background-color: #fffcf8;
+    transition: background-color 0.3s;
+}
+
+.dashed-border:hover {
+    background-color: #faf5ee;
+    border-color: var(--secondary);
+}
+
+.upload-img {
+    width: 100%;
+    max-width: 250px;
+    margin-bottom: 1.5rem;
+    border-radius: 50%; /* Make it circularish if it looks good, or keep square */
+    object-fit: contain;
+}
+
+.upload-btn {
+    background-color: var(--secondary);
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #b05555;
+    transition: transform 0.1s, box-shadow 0.1s;
+    font-family: var(--font-main);
+    margin-bottom: 1rem;
+}
+
+.upload-btn:active {
+    transform: translateY(4px);
+    box-shadow: none;
+}
+
+.supporting-text {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* LOADING SECTION */
+#loading-section {
+    text-align: center;
+    background-color: var(--quaternary);
+}
+
+.stickman-container {
+    margin-bottom: 1rem;
+}
+
+.dancing-stickman {
+    width: 150px;
+    animation: bounce 0.5s infinite alternate;
+}
+
+@keyframes bounce {
+    from { transform: translateY(0) rotate(-5deg); }
+    to { transform: translateY(-10px) rotate(5deg); }
+}
+
+.loading-text {
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--text-dark);
+}
+
+/* RESULTS SECTION */
+#results-section {
+    padding: 0;
+    overflow: hidden;
+    background-color: #fff;
+}
+
+.preview-container {
+    width: 100%;
+    height: 250px;
+    background-color: #eee;
+}
+
+#food-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.food-name-container {
+    padding: 1.5rem;
+    text-align: center;
+    position: relative;
+}
+
+.food-name-input {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    text-align: center;
+    border: none;
+    border-bottom: 2px solid transparent;
+    width: 100%;
+    font-family: var(--font-main);
+}
+
+.food-name-input:focus {
+    outline: none;
+    border-bottom-color: var(--secondary);
+}
+
+.edit-icon {
+    position: absolute;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #bbb;
+    pointer-events: none;
+}
+
+.nutrition-panel {
+    padding: 0 1.5rem 2rem 1.5rem;
+}
+
+.macro-row {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.macro-item {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.macro-value {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--secondary);
+    line-height: 1;
+}
+
+.macro-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #888;
+}
+
+.nutrients-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.nutrient-card {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 16px;
+    text-align: center;
+    border: 2px solid transparent;
+}
+
+.nutrient-card.protein { border-color: #FFB7B2; background-color: #fff5f5; }
+.nutrient-card.carbs { border-color: #FFDAC1; background-color: #fffbf5; }
+.nutrient-card.fats { border-color: #E2F0CB; background-color: #f7fcfa; }
+
+.nutrient-card .icon {
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.nutrient-card .label {
+    display: block;
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 0.2rem;
+}
+
+.nutrient-card .value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.micronutrients-table-container {
+    background-color: #fafafa;
+    border-radius: 16px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.micronutrients-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.micronutrients-table th, .micronutrients-table td {
+    padding: 0.8rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.micronutrients-table th {
+    color: #888;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.micronutrients-table td {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.micronutrients-table tr:last-child td {
+    border-bottom: none;
+}
+
+.reset-btn {
+    width: 100%;
+    background-color: var(--text-dark);
+    color: white;
+    border: none;
+    padding: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 16px;
+    cursor: pointer;
+    font-family: var(--font-main);
+}
