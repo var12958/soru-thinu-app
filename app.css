@@ -1,0 +1,275 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #ff7675, #fd79a8);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    color: #2d3436;
+    font-size: 2.5em;
+}
+
+#logoutBtn {
+    padding: 10px 20px;
+    background: #ff7675;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.upload-section {
+    display: flex;
+    gap: 50px;
+    align-items: flex-start;
+}
+
+.pizza-mascot {
+    flex-shrink: 0;
+}
+
+.pizza {
+    width: 150px;
+    height: 150px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.pizza-base {
+    width: 100%;
+    height: 100%;
+    background: #f39c12;
+    border-radius: 50%;
+    border: 8px solid #e67e22;
+    position: relative;
+}
+
+.toppings {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.pepperoni {
+    width: 20px;
+    height: 20px;
+    background: #c0392b;
+    border-radius: 50%;
+    position: absolute;
+}
+
+.p1 { top: 30px; left: 40px; }
+.p2 { top: 60px; right: 35px; }
+.p3 { bottom: 40px; left: 50px; }
+
+.cheese {
+    width: 15px;
+    height: 15px;
+    background: #f1c40f;
+    border-radius: 50%;
+    position: absolute;
+}
+
+.c1 { top: 50px; left: 60px; }
+.c2 { bottom: 60px; right: 45px; }
+
+.face {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.eyes {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.eye {
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    position: relative;
+}
+
+.pupil {
+    width: 10px;
+    height: 10px;
+    background: #2d3436;
+    border-radius: 50%;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    transition: all 0.1s ease;
+}
+
+.nose {
+    width: 0;
+    height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 5px solid #2d3436;
+    margin: 0 auto 8px;
+}
+
+.mouth {
+    width: 25px;
+    height: 12px;
+    border: 2px solid #2d3436;
+    border-top: none;
+    border-radius: 0 0 25px 25px;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+}
+
+.mouth.happy {
+    border-radius: 0 0 25px 25px;
+}
+
+.mouth.sad {
+    border-radius: 25px 25px 0 0;
+    border-top: 2px solid #2d3436;
+    border-bottom: none;
+    transform: scaleY(-1);
+}
+
+.upload-area {
+    flex: 1;
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.upload-area h2 {
+    color: #2d3436;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.drop-zone {
+    border: 3px dashed #ddd;
+    border-radius: 15px;
+    padding: 60px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.drop-zone:hover {
+    border-color: #ff7675;
+    background: #ffeaa7;
+}
+
+.drop-zone.dragover {
+    border-color: #00b894;
+    background: #d1f2eb;
+}
+
+.upload-icon {
+    font-size: 4em;
+    margin-bottom: 20px;
+}
+
+.drop-zone p {
+    color: #636e72;
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+#browseBtn {
+    padding: 15px 30px;
+    background: #ff7675;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.preview-section {
+    text-align: center;
+    margin-top: 30px;
+}
+
+#imagePreview {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.actions button {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#analyzeBtn {
+    background: #00b894;
+    color: white;
+}
+
+#clearBtn {
+    background: #636e72;
+    color: white;
+}
+
+.results {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 15px;
+}
+
+.results h3 {
+    color: #2d3436;
+    margin-bottom: 15px;
+}
+
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
