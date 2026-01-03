@@ -1,5 +1,57 @@
 const uploadSection = document.getElementById('upload-section');
 const loadingSection = document.getElementById('loading-section');
+
+// Mock Data for Demo
+const mockFoods = [
+    {
+        name: "Cheeseburger",
+        calories: 550,
+        protein: "30g",
+        carbs: "45g",
+        fats: "28g",
+        micros: [
+            { name: "Sodium", amount: "920mg" },
+            { name: "Iron", amount: "20%" },
+            { name: "Calcium", amount: "15%" }
+        ]
+    },
+    {
+        name: "Pepperoni Pizza",
+        calories: 320,
+        protein: "14g",
+        carbs: "38g",
+        fats: "13g",
+        micros: [
+            { name: "Calcium", amount: "25%" },
+            { name: "Vitamin A", amount: "8%" },
+            { name: "Sodium", amount: "700mg" }
+        ]
+    },
+    {
+        name: "Grilled Chicken Salad",
+        calories: 450,
+        protein: "45g",
+        carbs: "12g",
+        fats: "20g",
+        micros: [
+            { name: "Vitamin C", amount: "40%" },
+            { name: "Vitamin K", amount: "80%" },
+            { name: "Potassium", amount: "12%" }
+        ]
+    },
+    {
+        name: "Chocolate Cake",
+        calories: 400,
+        protein: "5g",
+        carbs: "55g",
+        fats: "18g",
+        micros: [
+            { name: "Sugar", amount: "40g" },
+            { name: "Calcium", amount: "4%" }
+        ]
+    }
+];
+
 const resultsSection = document.getElementById('results-section');
 const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
@@ -26,12 +78,195 @@ const carbsVal = document.getElementById('carbs-val');
 const fatsVal = document.getElementById('fats-val');
 const microBody = document.getElementById('micronutrients-body');
 
+// --- Dashboard & User Elements ---
+const dashboardElements = [
+    document.getElementById('dashboard-left'),
+    document.getElementById('dashboard-center-tracker'),
+    document.getElementById('dashboard-right')
+];
+
+const onboardingModal = document.getElementById('onboarding-modal');
+const onboardingForm = document.getElementById('onboarding-form');
+const editProfileBtn = document.getElementById('edit-profile-btn');
+const calorieProgress = document.getElementById('calorie-progress');
+const caloriesLeftEl = document.getElementById('calories-left');
+const dailyGoalEl = document.getElementById('daily-goal');
+const dailyEatenEl = document.getElementById('daily-eaten');
+
+let userProfile = null;
+let dailyStats = {
+    date: new Date().toDateString(),
+    eaten: 0,
+    items: []
+};
+
 // Event Listeners
+
+document.addEventListener('DOMContentLoaded', initApp);
+
+onboardingForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    saveUserProfile();
+});
+
+editProfileBtn.addEventListener('click', () => {
+    onboardingModal.classList.remove('hidden');
+});
 
 uploadBtn.addEventListener('click', (e) => {
     e.stopPropagation(); // Prevent bubbling to dropZone click
     fileInput.click();
 });
+
+function initApp() {
+    loadUserProfile();
+    loadDailyStats();
+    updateDashboardUI();
+}
+
+function loadUserProfile() {
+    const savedProfile = localStorage.getItem('foodsnap_user');
+    if (savedProfile) {
+        userProfile = JSON.parse(savedProfile);
+        dashboardElements.forEach(el => el.classList.remove('hidden'));
+        
+        // Pre-fill form
+        document.getElementById('user-height').value = userProfile.height;
+        document.getElementById('user-weight').value = userProfile.weight;
+        document.getElementById('user-age').value = userProfile.age;
+        document.getElementById('user-gender').value = userProfile.gender;
+        document.getElementById('user-goal').value = userProfile.goal;
+    } else {
+        // Show modal if new user
+        onboardingModal.classList.remove('hidden');
+    }
+}
+
+function saveUserProfile() {
+    const height = parseInt(document.getElementById('user-height').value);
+    const weight = parseInt(document.getElementById('user-weight').value);
+    const age = parseInt(document.getElementById('user-age').value);
+    const gender = document.getElementById('user-gender').value;
+    const goal = document.getElementById('user-goal').value;
+
+    if (!height || !weight || !age) {
+        alert("Please fill in all fields");
+        return;
+    }
+
+    // Calculate BMR (Mifflin-St Jeor Equation)
+    let bmr;
+    if (gender === 'male') {
+        bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+    } else {
+        bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+    }
+
+    // Calculate TDEE (Sedentary default 1.2 for simplicity, can be expanded)
+    let tdee = bmr * 1.2;
+
+    // Adjust for Goal
+    let targetCalories = Math.round(tdee);
+    if (goal === 'lose') {
+        targetCalories -= 500; // Deficit
+    } else if (goal === 'bulk') {
+        targetCalories += 500; // Surplus
+    }
+
+    userProfile = { height, weight, age, gender, goal, targetCalories };
+    localStorage.setItem('foodsnap_user', JSON.stringify(userProfile));
+    
+    onboardingModal.classList.add('hidden');
+    dashboardElements.forEach(el => el.classList.remove('hidden'));
+    updateDashboardUI();
+}
+
+function loadDailyStats() {
+    const savedStats = localStorage.getItem('foodsnap_daily_stats');
+    const today = new Date().toDateString();
+
+    if (savedStats) {
+        const parsed = JSON.parse(savedStats);
+        if (parsed.date === today) {
+            dailyStats = parsed;
+            if (!dailyStats.items) dailyStats.items = []; // Ensure items array exists for old data
+        } else {
+            // New day, reset stats
+            dailyStats = { date: today, eaten: 0, items: [] };
+            saveDailyStats();
+        }
+    } else {
+        dailyStats = { date: today, eaten: 0, items: [] };
+        saveDailyStats();
+    }
+}
+
+function saveDailyStats() {
+    localStorage.setItem('foodsnap_daily_stats', JSON.stringify(dailyStats));
+    updateDashboardUI();
+}
+
+function updateDashboardUI() {
+    if (!userProfile) return;
+
+    const target = userProfile.targetCalories;
+    const eaten = dailyStats.eaten;
+    const left = target - eaten;
+
+    dailyGoalEl.innerText = target;
+    dailyEatenEl.innerText = eaten;
+    caloriesLeftEl.innerText = left; // Allow negative if over
+
+    // Update Progress Circle
+    // Calculate percentage of GOAL eaten
+    let percentage = (eaten / target) * 100;
+    if (percentage > 100) percentage = 100; // Cap visual at 100% (or handle overflow differently)
+    
+    // Conic gradient: Start color X deg, End color Y deg
+    // 360 deg * percentage
+    const degrees = (percentage / 100) * 360;
+    calorieProgress.style.background = `conic-gradient(var(--secondary) ${degrees}deg, #eee ${degrees}deg)`;
+    
+    renderFoodLog();
+}
+
+function addCalories(foodItem) {
+    dailyStats.eaten += foodItem.calories;
+    if (!dailyStats.items) dailyStats.items = [];
+    
+    dailyStats.items.push({
+        name: foodItem.name,
+        calories: foodItem.calories,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+    
+    saveDailyStats();
+}
+
+function renderFoodLog() {
+    const logList = document.getElementById('food-log-list');
+    if (!logList) return;
+    
+    if (!dailyStats.items || dailyStats.items.length === 0) {
+        logList.innerHTML = '<div class="empty-state">No food logged yet</div>';
+        return;
+    }
+    
+    logList.innerHTML = '';
+    // Show recent first
+    [...dailyStats.items].reverse().forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'log-item';
+        div.innerHTML = `
+            <div class="log-info">
+                <span class="log-name">${item.name}</span>
+                <span class="log-time">${item.time}</span>
+            </div>
+            <span class="log-cals">+${item.calories}</span>
+        `;
+        logList.appendChild(div);
+    });
+}
 
 dropZone.addEventListener('click', () => {
     fileInput.click();
@@ -110,6 +345,10 @@ function analyzeFood() {
 
     // Animate Numbers (Simple fake count up)
     caloriesVal.textContent = randomFood.calories;
+    
+    // Add to daily tracking
+    addCalories(randomFood);
+
     proteinVal.textContent = randomFood.protein;
     carbsVal.textContent = randomFood.carbs;
     fatsVal.textContent = randomFood.fats;
@@ -220,4 +459,3 @@ function fetchHistory() {
     })
     .catch(err => console.error('Failed to fetch history', err));
 }
-

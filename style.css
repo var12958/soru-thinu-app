@@ -26,9 +26,50 @@ body {
 }
 
 header {
-    text-align: center;
     margin-bottom: 2rem;
     margin-top: 1rem;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.logo-container {
+    text-align: center;
+}
+
+.auth-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
+.auth-btn {
+    background: #fff;
+    border: 2px solid var(--secondary);
+    color: var(--secondary);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.auth-btn:hover {
+    background: var(--secondary);
+    color: white;
+}
+
+.user-email {
+    font-size: 0.8rem;
+    color: var(--text-dark);
+    font-weight: 600;
 }
 
 .logo {
@@ -53,7 +94,113 @@ header {
 
 main {
     width: 100%;
-    max-width: 480px; /* Mobile app feel */
+    max-width: 1400px; /* Increased from 480px */
+    padding: 0 1rem;
+    margin: 0 auto;
+}
+
+.app-layout {
+    display: grid;
+    grid-template-columns: 350px minmax(400px, 500px) 350px;
+    gap: 2rem;
+    justify-content: center;
+    align-items: start;
+}
+
+.center-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.side-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+@media (max-width: 1200px) {
+    .app-layout {
+        grid-template-columns: 1fr 450px 1fr;
+    }
+}
+
+@media (max-width: 1000px) {
+    .app-layout {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+    }
+    
+    .center-column {
+        order: -1; /* Keep main interaction at top */
+    }
+    
+    /* When stacked, maybe show tracker first? */
+}
+
+/* Ensure hidden still works */
+.hidden {
+    display: none !important;
+}
+
+/* Card base styles update if needed */
+.card, .dash-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(118, 215, 196, 0.15);
+    text-align: center;
+    transition: transform 0.2s;
+    width: 100%;
+}
+
+.dash-card:hover {
+    transform: translateY(-5px);
+}
+
+.log-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem;
+    border-bottom: 1px solid #eee;
+    animation: fadeIn 0.3s ease;
+}
+
+.log-item:last-child {
+    border-bottom: none;
+}
+
+.log-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+}
+
+.log-name {
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+}
+
+.log-time {
+    font-size: 0.75rem;
+    color: #888;
+}
+
+.log-cals {
+    font-weight: 700;
+    color: var(--secondary);
+    background: rgba(46, 204, 113, 0.1);
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* CARDS */
@@ -66,7 +213,7 @@ main {
     transition: transform 0.3s ease;
 }
 
-.hidden {
+.hidden, .dashboard-grid.hidden {
     display: none;
 }
 
@@ -277,7 +424,7 @@ main {
     border-collapse: collapse;
 }
 
-.micronutrients-table th, .micronutrients-table td {
+.micronutrients-table th, .micronutrients-table td {       
     padding: 0.8rem;
     text-align: left;
     border-bottom: 1px solid #eee;
@@ -309,4 +456,427 @@ main {
     border-radius: 16px;
     cursor: pointer;
     font-family: var(--font-main);
+}
+
+/* --- EAT-O-METER Dashboard --- */
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.dash-card {
+    background: #fff;
+    border-radius: 30px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 25px rgba(181, 230, 29, 0.15); /* Soft green shadow */
+    transition: transform 0.2s ease;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.dash-card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.card-header h3 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+.card-header .icon {
+    font-size: 1.5rem;
+    background: #F0F9E8; /* Light pastel green bg */
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+}
+
+/* Daily Tracker Card */
+.daily-tracker {
+    background: #E8F5E9; /* Pastel Green Background */
+    grid-column: span 2; /* Wider card */
+}
+
+@media (max-width: 768px) {
+    .daily-tracker {
+        grid-column: span 1;
+    }
+}
+
+.tracker-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.calories-left {
+    text-align: center;
+}
+
+.calories-left .big-number {
+    display: block;
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--secondary);
+    line-height: 1;
+}
+
+.calories-left .label {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.tracker-stats {
+    display: flex;
+    justify-content: space-around;
+    background: rgba(255, 255, 255, 0.6);
+    padding: 1rem;
+    border-radius: 20px;
+}
+
+.tracker-stats .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tracker-stats .stat .label {
+    font-size: 0.75rem;
+    color: #888;
+    margin-bottom: 0.2rem;
+}
+
+.tracker-stats .stat .value {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-dark);
+}
+
+.progress-bar-container {
+    height: 12px;
+    background: #dcefd3;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: var(--secondary);
+    border-radius: 6px;
+    transition: width 0.5s ease;
+}
+
+/* Food Log */
+.food-log .log-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.log-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.log-item:last-child {
+    border-bottom: none;
+}
+
+.log-item .food-info {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.log-item .food-icon {
+    font-size: 1.2rem;
+}
+
+.log-item .food-name {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.log-item .food-cals {
+    font-weight: 700;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.empty-state {
+    text-align: center;
+    color: #aaa;
+    padding: 2rem 0;
+    font-style: italic;
+}
+
+/* Calorie Breakdown */
+.breakdown-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.breakdown-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.breakdown-item .item-icon {
+    font-size: 1.5rem;
+    width: 30px;
+    text-align: center;
+}
+
+.breakdown-item .bar-container {
+    flex: 1;
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+}
+
+.breakdown-item .mini-bar {
+    height: 100%;
+    border-radius: 4px;
+}
+
+.breakdown-item .item-cals {
+    width: 60px;
+    text-align: right;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #666;
+}
+
+/* Gauge Card */
+.gauge-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.gauge-body {
+    width: 160px;
+    height: 80px;
+    background: #eee;
+    border-radius: 80px 80px 0 0;
+    position: relative;
+}
+
+.gauge-fill {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--secondary);
+    transform-origin: center top;
+    transform: rotate(0turn); 
+    transition: transform 0.5s ease;
+    /* This is tricky with pure CSS div rotation for a semicircle fill without SVG. 
+       Let's use a simpler visual: A conic gradient masked. */
+    top: 0;
+    background: conic-gradient(from 0.75turn at 50% 100%, var(--secondary) 0deg, #eee 0deg);
+}
+
+.gauge-cover {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 60px;
+    background: #fff;
+    border-radius: 60px 60px 0 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 10px;
+}
+
+#gauge-text {
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--text-dark);
+}
+
+.gauge-subtext {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 600;
+}
+
+.small-btn {
+    margin-top: 1rem;
+    background: #f0f0f0;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.small-btn:hover {
+    background: #e0e0e0;
+}
+
+.small-btn.outline {
+    background: transparent;
+    border: 2px solid #eee;
+}
+
+.small-btn.outline:hover {
+    border-color: var(--secondary);
+    color: var(--secondary);
+}
+
+/* Goals Card */
+.macro-chart {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    height: 120px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.macro-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+    width: 40px;
+}
+
+.macro-bar .fill {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.macro-bar span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #888;
+}
+
+.protein-fill { background: #FF9F43; }
+.carbs-fill { background: #54A0FF; }
+.fat-fill { background: #FF6B6B; }
+.fiber-fill { background: #1DD1A1; }
+
+
+/* --- Modal --- */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 24px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }      
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-content h2 {
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+}
+
+.modal-content p {
+    color: #666;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    font-family: var(--font-main);
+    font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--secondary);
+    outline: none;
+}
+
+.primary-btn {
+    width: 100%;
+    background-color: var(--secondary);
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.primary-btn:hover {
+    background-color: #c06565;
 }
