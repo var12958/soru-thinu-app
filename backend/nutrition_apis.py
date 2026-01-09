@@ -195,8 +195,47 @@ class NutritionService:
         return None
 
     def _default_fallback(self, query):
-        # Last resort: generic estimation based on query length/random or just zeros
-        # For now, return zeros with a warning
+        # Fallback for the 5 MVP items to ensure a good demo experience
+        # if the external APIs fail or are not configured.
+        query_lower = query.lower().replace("_", " ")
+        
+        defaults = {
+            "apple pie": {
+                "calories": 296, "protein": 2.4, "carbs": 43.5, "fat": 13.1, 
+                "serving": "1 slice (100g)"
+            },
+            "baby back ribs": {
+                "calories": 280, "protein": 20.0, "carbs": 8.0, "fat": 18.0, 
+                "serving": "100g"
+            },
+            "baklava": {
+                "calories": 420, "protein": 6.0, "carbs": 50.0, "fat": 22.0, 
+                "serving": "1 piece (100g)"
+            },
+            "beef carpaccio": {
+                "calories": 160, "protein": 24.0, "carbs": 0.5, "fat": 7.0, 
+                "serving": "100g"
+            },
+            "beef tartare": {
+                "calories": 250, "protein": 18.0, "carbs": 2.0, "fat": 19.0, 
+                "serving": "100g"
+            }
+        }
+        
+        for key in defaults:
+            if key in query_lower:
+                d = defaults[key]
+                return {
+                    "food": query,
+                    "serving_size": d["serving"],
+                    "calories": d["calories"],
+                    "protein_g": d["protein"],
+                    "carbs_g": d["carbs"],
+                    "fat_g": d["fat"],
+                    "source": "Fallback (MVP)"
+                }
+
+        # Generic fallback
         return {
             "food": query,
             "serving_size": "Unknown",
