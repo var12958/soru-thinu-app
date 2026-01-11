@@ -117,51 +117,64 @@ class FoodSnapApp {
         this.analyzeBtn.textContent = 'Analyzing...';
         
         try {
-            // Simulate API call to backend
             const formData = new FormData();
             const fileInput = document.getElementById('fileInput');
             formData.append('file', fileInput.files[0]);
             
-            // Mock response for demo - replace with actual API call
-            setTimeout(() => {
-                this.displayResults({
-                    food_type: 'Pizza',
-                    confidence: 0.95,
-                    nutrition: {
-                        calories: 285,
-                        protein: 12,
-                        carbs: 36,
-                        fat: 10
-                    }
-                });
-                this.setHappyExpression();
-                this.analyzeBtn.disabled = false;
-                this.analyzeBtn.textContent = 'Analyze Food';
-            }, 2000);
+            // Call the actual backend API
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            this.displayResults(data);
+            this.setHappyExpression();
             
         } catch (error) {
+            console.error('Error analyzing food:', error);
             this.setSadExpression();
             alert('Error analyzing food. Please try again.');
+        } finally {
             this.analyzeBtn.disabled = false;
             this.analyzeBtn.textContent = 'Analyze Food';
         }
     }
 
     displayResults(data) {
-        document.getElementById('foodType').innerHTML = `
-            <h4>Food Type: ${data.food_type}</h4>
-            <p>Confidence: ${(data.confidence * 100).toFixed(1)}%</p>
-        `;
-        
-        document.getElementById('nutritionInfo').innerHTML = `
-            <h4>Nutrition (per 100g):</h4>
-            <ul>
-                <li>Calories: ${data.nutrition.calories}</li>
-                <li>Protein: ${data.nutrition.protein}g</li>
-                <li>Carbs: ${data.nutrition.carbs}g</li>
-                <li>Fat: ${data.nutrition.fat}g</li>
-            </ul>
-        `;
+        if (data.status === 'success' && data.items && data.items.length > 0) {
+            const firstItem = data.items[0];
+            
+            document.getElementById('foodType').innerHTML = `
+                <h4>Food Type: ${firstItem.food}</h4>
+                <p>Serving Size: ${firstItem.serving_size}</p>
+                <p>Source: ${firstItem.source}</p>
+            `;
+            
+            document.getElementById('nutritionInfo').innerHTML = `
+                <h4>Nutrition Information:</h4>
+                <ul>
+                    <li>Calories: ${firstItem.calories}</li>
+                    <li>Protein: ${firstItem.protein_g}g</li>
+                    <li>Carbs: ${firstItem.carbs_g}g</li>
+                    <li>Fat: ${firstItem.fat_g}g</li>
+                </ul>
+                <p><strong>Total Calories: ${data.total_calories}</strong></p>
+            `;
+        } else {
+            document.getElementById('foodType').innerHTML = `
+                <h4>Analysis Failed</h4>
+                <p>Could not identify the food item</p>
+            `;
+            
+            document.getElementById('nutritionInfo').innerHTML = `
+                <p>Please try with a clearer image</p>
+            `;
+        }
         
         this.results.style.display = 'block';
     }

@@ -8,3 +8,5 @@ tensorflow-cpu
 pillow
 numpy
 requests
+ollama
+google-generativeai

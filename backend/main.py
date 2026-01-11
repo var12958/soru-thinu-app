@@ -3,12 +3,14 @@ import json
 import shutil
 from datetime import datetime
 from typing import List, Optional
+import time
 
-from fastapi import FastAPI, File, UploadFile, HTTPException, Depends
+from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
+import ollama
 
 # Load environment variables from .env file if present
 load_dotenv()
@@ -17,6 +19,9 @@ load_dotenv()
 from google.cloud import storage
 import firebase_admin
 from firebase_admin import credentials, firestore
+
+# Gemini AI
+import google.generativeai as genai
 
 # ML Inference (Importing from sibling directory requires sys.path hack or proper packaging)
 import sys
@@ -42,6 +47,7 @@ BUCKET_NAME = os.getenv("GCS_BUCKET_NAME", "food-snap-uploads")
 MODEL_BUCKET_NAME = os.getenv("MODEL_BUCKET_NAME", "food-snap-models")
 MODEL_FILENAME = os.getenv("MODEL_FILENAME", "latest_model.keras")
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "food-snap-project")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # --- Global State ---
 predictor = None
@@ -68,6 +74,18 @@ class PredictionResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     detail: str
+
+class ChatMessage(BaseModel):
+    role: str # "user" or "assistant"
+    content: str
+
+class ChatRequest(BaseModel):
+    message: str
+    history: List[ChatMessage] = []
+
+class ChatResponse(BaseModel):
+    response: str
+    status: str = "success"
 
 # --- Startup Events ---
 @app.on_event("startup")
@@ -119,6 +137,8 @@ async def startup_event():
     # Initialize Nutrition Service
     nutrition_service = NutritionService()
     print("Services initialized.")
+    if not GEMINI_API_KEY:
+        print("Warning: GEMINI_API_KEY not found. Chat features may be limited.")
 
 # --- Helper Functions ---
 def upload_to_gcs(file_obj, filename, content_type):
@@ -131,6 +151,15 @@ def upload_to_gcs(file_obj, filename, content_type):
     except Exception as e:
         print(f"Upload failed: {e}")
         return None
+
+# Simple Rate Limiter
+last_chat_request = {}
+
+def check_rate_limit(ip: str):
+    now = time.time()
+    if ip in last_chat_request and now - last_chat_request[ip] < 2.0: # 2 seconds delay
+        raise HTTPException(status_code=429, detail="Please wait a moment before sending another message.")
+    last_chat_request[ip] = now
 
 # --- Endpoints ---
 
@@ -215,6 +244,85 @@ async def predict_food(file: UploadFile = File(...)):
         print(f"Error processing request: {e}")
         # Return structured error even for 500
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+
+@app.get("/api/chat/test")
+async def test_ollama():
+    try:
+        response = ollama.chat(
+            model="foodsnap-assistant",
+            messages=[{"role": "user", "content": "Hello"}]
+        )
+        return {"status": "success", "response": response}
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+
+@app.post("/api/chat", response_model=ChatResponse)
+async def chat_endpoint(request: ChatRequest, req: Request):
+    # Rate Limit Check
+    check_rate_limit(req.client.host)
+
+    try:
+        # Try Ollama first
+        messages = []
+        for msg in request.history:
+            messages.append({
+                "role": msg.role,
+                "content": msg.content
+            })
+        
+        messages.append({
+            "role": "user",
+            "content": request.message
+        })
+
+        try:
+            response = ollama.chat(
+                model="foodsnap-assistant",
+                messages=messages,
+                options={
+                    "temperature": 0.7,
+                    "timeout": 30
+                }
+            )
+            
+            return ChatResponse(
+                response=response['message']['content'],
+                status="success"
+            )
+            
+        except Exception as ollama_error:
+            print(f"Ollama error: {ollama_error}")
+            
+            # Fallback to Gemini if available
+            if GEMINI_API_KEY:
+                try:
+                    model = genai.GenerativeModel('gemini-pro')
+                    chat_history = []
+                    for msg in request.history:
+                        chat_history.append({
+                            "role": msg.role,
+                            "parts": [msg.content]
+                        })
+
+                    chat = model.start_chat(history=chat_history)
+                    response = chat.send_message(request.message)
+                    
+                    return ChatResponse(
+                        response=response.text,
+                        status="success"
+                    )
+                except Exception as gemini_error:
+                    print(f"Gemini error: {gemini_error}")
+            
+            # Final fallback
+            return ChatResponse(
+                response="I'm having trouble connecting to my knowledge base right now. Please try again in a moment, or feel free to upload a food photo for analysis!",
+                status="error"
+            )
+        
+    except Exception as e:
+        print(f"Chat endpoint error: {e}")
+        raise HTTPException(status_code=500, detail=f"Chat service error: {str(e)}")
 
 @app.get("/history")
 def get_history(limit: int = 10):
