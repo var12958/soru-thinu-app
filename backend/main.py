@@ -26,7 +26,11 @@ import google.generativeai as genai
 # ML Inference (Importing from sibling directory requires sys.path hack or proper packaging)
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+<<<<<<< HEAD
 from ml.food_predictor import FoodPredictor, get_nutrition_data
+=======
+from ml.inference import FoodPredictor
+>>>>>>> 9ce856a3b07268dd31a699b2dc2f080368e608f4
 from backend.nutrition_apis import NutritionService
 
 # --- Configuration ---
@@ -131,6 +135,7 @@ async def startup_event():
         except Exception as e:
             print(f"Failed to download model from GCS: {e}")
 
+<<<<<<< HEAD
     # Initialize Predictor with trained model
     predictor = None
     confidence_threshold = float(os.getenv("CONFIDENCE_THRESHOLD", "0.7"))
@@ -147,6 +152,11 @@ async def startup_event():
     if predictor is None:
         print("No trained model found. Please run training first.")
 
+=======
+    # Initialize Predictor (Will default to mock if model missing)
+    predictor = FoodPredictor(local_model_path if os.path.exists(local_model_path) else None)
+    
+>>>>>>> 9ce856a3b07268dd31a699b2dc2f080368e608f4
     # Initialize Nutrition Service
     nutrition_service = NutritionService()
     print("Services initialized.")
@@ -200,6 +210,7 @@ async def predict_food(file: UploadFile = File(...)):
         image_stream = BytesIO(contents)
         
         prediction_result = predictor.predict(image_stream)
+<<<<<<< HEAD
         food_class = prediction_result.get('class', 'unknown')
         confidence = prediction_result.get('confidence', 0.0)
         size = prediction_result.get('size', 'medium')
@@ -227,15 +238,38 @@ async def predict_food(file: UploadFile = File(...)):
             item = NutritionInfo(
                 food=nutrition_data.get("food", food_class),
                 serving_size=nutrition_data.get("serving_size", "1 serving"),
+=======
+        detected_items = prediction_result.get("items", [prediction_result.get("class", "unknown")])
+        confidence = prediction_result.get("confidence", 0.0)
+
+        # Process each detected item
+        response_items = []
+        total_calories = 0
+        
+        for food_name in detected_items:
+            # Fetch Nutrition Info
+            nutrition_data = nutrition_service.get_nutrition_info(food_name)
+            
+            item = NutritionInfo(
+                food=nutrition_data.get("food", food_name),
+                serving_size=str(nutrition_data.get("serving_size", "Unknown")),
+>>>>>>> 9ce856a3b07268dd31a699b2dc2f080368e608f4
                 calories=int(nutrition_data.get("calories", 0)),
                 protein_g=float(nutrition_data.get("protein_g", 0)),
                 carbs_g=float(nutrition_data.get("carbs_g", 0)),
                 fat_g=float(nutrition_data.get("fat_g", 0)),
+<<<<<<< HEAD
                 source=nutrition_data.get("source", "Database")
             )
         
         response_items.append(item)
         total_calories = item.calories
+=======
+                source=nutrition_data.get("source", "Unknown")
+            )
+            response_items.append(item)
+            total_calories += item.calories
+>>>>>>> 9ce856a3b07268dd31a699b2dc2f080368e608f4
 
         # Upload Image to GCS (Optional, for history)
         image_url = None
@@ -259,7 +293,10 @@ async def predict_food(file: UploadFile = File(...)):
             })
             prediction_id = doc_ref.id
 
+<<<<<<< HEAD
         # Create standard response format (keep existing structure)
+=======
+>>>>>>> 9ce856a3b07268dd31a699b2dc2f080368e608f4
         return PredictionResponse(
             status="success",
             items=response_items,
@@ -376,4 +413,8 @@ def get_history(limit: int = 10):
 
 if __name__ == "__main__":
     import uvicorn
+<<<<<<< HEAD
     uvicorn.run(app, host="0.0.0.0", port=8081)
+=======
+    uvicorn.run(app, host="0.0.0.0", port=8080)
+>>>>>>> 9ce856a3b07268dd31a699b2dc2f080368e608f4

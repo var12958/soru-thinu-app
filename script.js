@@ -1,6 +1,60 @@
 const uploadSection = document.getElementById('upload-section');
 const loadingSection = document.getElementById('loading-section');
 
+<<<<<<< HEAD
+=======
+// Mock Data for Demo
+const mockFoods = [
+    {
+        name: "Cheeseburger",
+        calories: 550,
+        protein: "30g",
+        carbs: "45g",
+        fats: "28g",
+        micros: [
+            { name: "Sodium", amount: "920mg" },
+            { name: "Iron", amount: "20%" },
+            { name: "Calcium", amount: "15%" }
+        ]
+    },
+    {
+        name: "Pepperoni Pizza",
+        calories: 320,
+        protein: "14g",
+        carbs: "38g",
+        fats: "13g",
+        micros: [
+            { name: "Calcium", amount: "25%" },
+            { name: "Vitamin A", amount: "8%" },
+            { name: "Sodium", amount: "700mg" }
+        ]
+    },
+    {
+        name: "Grilled Chicken Salad",
+        calories: 450,
+        protein: "45g",
+        carbs: "12g",
+        fats: "20g",
+        micros: [
+            { name: "Vitamin C", amount: "40%" },
+            { name: "Vitamin K", amount: "80%" },
+            { name: "Potassium", amount: "12%" }
+        ]
+    },
+    {
+        name: "Chocolate Cake",
+        calories: 400,
+        protein: "5g",
+        carbs: "55g",
+        fats: "18g",
+        micros: [
+            { name: "Sugar", amount: "40g" },
+            { name: "Calcium", amount: "4%" }
+        ]
+    }
+];
+
+>>>>>>> 9ce856a3b07268dd31a699b2dc2f080368e608f4
 const resultsSection = document.getElementById('results-section');
 const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
@@ -286,6 +340,7 @@ function analyzeFood() {
     loadingSection.classList.add('hidden');
     resultsSection.classList.remove('hidden');
 
+<<<<<<< HEAD
     // Call your trained model API
     const formData = new FormData();
     formData.append('file', window.currentFile);
@@ -339,6 +394,36 @@ function analyzeFood() {
         fatsVal.textContent = '0g';
         microBody.innerHTML = '<tr><td colspan="2">Please check if backend server is running on port 8081</td></tr>';
     });
+=======
+    // Select random mock data
+    const randomFood = mockFoods[Math.floor(Math.random() * mockFoods.length)];
+
+    // Populate Data
+    foodNameInput.value = randomFood.name;
+
+    // Animate Numbers (Simple fake count up)
+    caloriesVal.textContent = randomFood.calories;
+    
+    // Add to daily tracking
+    addCalories(randomFood);
+
+    proteinVal.textContent = randomFood.protein;
+    carbsVal.textContent = randomFood.carbs;
+    fatsVal.textContent = randomFood.fats;
+
+    // Populate Table
+    microBody.innerHTML = '';
+    randomFood.micros.forEach(micro => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${micro.name}</td><td>${micro.amount}</td>`;
+        microBody.appendChild(row);
+    });
+
+    // If user is signed in, upload the image and save prediction to Firestore
+    if (firebase && firebase.auth && firebase.auth().currentUser) {
+        uploadImageAndSavePrediction(window.currentFile, randomFood.name, randomFood.calories);
+    }
+>>>>>>> 9ce856a3b07268dd31a699b2dc2f080368e608f4
 }
 
 function resetApp() {

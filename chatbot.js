@@ -3,7 +3,11 @@ class ChatbotWidget {
         this.isOpen = false;
         this.conversationHistory = [];
         this.isTyping = false;
+<<<<<<< HEAD
         this.API_URL = "http://127.0.0.1:8081/api/chat"; // ✅ Backend URL
+=======
+        this.API_URL = "http://127.0.0.1:8080/api/chat"; // ✅ Backend URL
+>>>>>>> 9ce856a3b07268dd31a699b2dc2f080368e608f4
         this.init();
     }
 
