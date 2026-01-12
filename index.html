@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SORU MUKKIYAM AI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap"
+        rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="chatbot.css" />
+</head>
+
+<body>
+
+<header>
+    <div class="header-content">
+        <div class="logo-container">
+            <div class="logo">Eat-O-Meter</div>
+            <div class="subtitle">Plate exposed</div>
+        </div>
+        <div class="auth-controls">
+            <span id="user-email" class="user-email"></span>
+            <button id="sign-in-btn" class="auth-btn">Sign In with Google</button>
+            <button id="sign-out-btn" class="auth-btn hidden">Sign Out</button>
+        </div>
+    </div>
+</header>
+
+<!-- User Onboarding Modal -->
+<div id="onboarding-modal" class="modal hidden">
+    <div class="modal-content">
+        <h2>Let's set up your profile</h2>
+        <p>To give you accurate nutrition advice, we need a few details.</p>
+        
+        <form id="onboarding-form">
+            <div class="form-group">
+                <label>Height (cm)</label>
+                <input type="number" id="user-height" required placeholder="e.g. 175">
+            </div>
+            
+            <div class="form-group">
+                <label>Weight (kg)</label>
+                <input type="number" id="user-weight" required placeholder="e.g. 70">
+            </div>
+            
+            <div class="form-group">
+                <label>Age</label>
+                <input type="number" id="user-age" required placeholder="e.g. 25">
+            </div>
+
+            <div class="form-group">
+                <label>Gender</label>
+                <select id="user-gender">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Goal</label>
+                <select id="user-goal">
+                    <option value="lose">Lose Weight</option>
+                    <option value="maintain">Maintain</option>
+                    <option value="bulk">Bulk / Gain Muscle</option>
+                </select>
+            </div>
+
+            <button type="submit" class="primary-btn">Save Profile</button>
+        </form>
+    </div>
+</div>
+
+<main class="app-layout">
+
+    <!-- Left Column: Food Log & Breakdown -->
+    <div id="dashboard-left" class="side-column hidden">
+        
+        <!-- Today's Food Log -->
+        <div class="dash-card food-log">
+            <div class="card-header">
+                <h3>Today's Food Log</h3>
+                <span class="icon">📝</span>
+            </div>
+            <div class="log-list" id="food-log-list">
+                <!-- Items will be added here dynamically -->
+                <div class="empty-state">No food logged yet</div>
+            </div>
+        </div>
+
+        <!-- Calorie Breakdown -->
+        <div class="dash-card breakdown">
+            <div class="card-header">
+                <h3>Calorie Breakdown</h3>
+                <span class="icon">🍔</span>
+            </div>
+            <div class="breakdown-items">
+                <div class="breakdown-item">
+                    <span class="item-icon">🍔</span>
+                    <div class="bar-container">
+                        <div class="mini-bar" style="width: 40%; background: #FF9F43;"></div>
+                    </div>
+                    <span class="item-cals">Burger</span>
+                </div>
+                <div class="breakdown-item">
+                    <span class="item-icon">🍕</span>
+                    <div class="bar-container">
+                        <div class="mini-bar" style="width: 60%; background: #FF6B6B;"></div>
+                    </div>
+                    <span class="item-cals">Pizza</span>
+                </div>
+                <div class="breakdown-item">
+                    <span class="item-icon">🥤</span>
+                    <div class="bar-container">
+                        <div class="mini-bar" style="width: 20%; background: #54A0FF;"></div>
+                    </div>
+                    <span class="item-cals">Soda</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Center Column: Upload, Results, Daily Tracker -->
+    <div class="center-column">
+        
+        <!-- Upload Section -->
+        <section id="upload-section" class="card">
+            <div class="drop-zone" id="drop-zone">
+                <div class="dashed-border">
+                    <img src="assets/upload_illustration.png" class="upload-img" />
+                    <button class="upload-btn" id="upload-btn">Upload Photo</button>
+                    <p class="supporting-text">JPG, PNG. One food item per photo.</p>
+                </div>
+                <input type="file" id="file-input" accept="image/png, image/jpeg" hidden />
+            </div>
+        </section>
+
+        <!-- Loading -->
+        <section id="loading-section" class="card hidden">
+            <div class="stickman-container">
+                <img src="assets/stickman_dancing.png" class="dancing-stickman" />
+            </div>
+            <p class="loading-text">Analyzing your Soru...</p>
+        </section>
+
+        <!-- Results -->
+        <section id="results-section" class="card hidden">
+            <div class="preview-container">
+                <img id="food-preview" src="" alt="Food Preview" />
+            </div>
+
+            <div class="food-name-container">
+                <input id="food-name" value="Detected Food" class="food-name-input" />
+                <span class="edit-icon">✎</span>
+            </div>
+
+            <div class="nutrition-panel">
+
+                <div class="macro-row">
+                    <div class="macro-item">
+                        <span id="calories-val" class="macro-value">0</span>
+                        <span class="macro-label">Kcal</span>
+                    </div>
+                </div>
+
+                <div class="nutrients-grid">
+                    <div class="nutrient-card protein">
+                        <span class="icon">🥩</span>
+                        <span class="label">Protein</span>
+                        <span id="protein-val" class="value">0g</span>
+                    </div>
+
+                    <div class="nutrient-card carbs">
+                        <span class="icon">🍞</span>
+                        <span class="label">Carbs</span>
+                        <span id="carbs-val" class="value">0g</span>
+                    </div>
+
+                    <div class="nutrient-card fats">
+                        <span class="icon">🥑</span>
+                        <span class="label">Fats</span>
+                        <span id="fats-val" class="value">0g</span>
+                    </div>
+                </div>
+
+                <div class="micronutrients-table-container">
+                    <table class="micronutrients-table">
+                        <thead>
+                            <tr>
+                                <th>Micronutrient</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="micronutrients-body"></tbody>
+                    </table>
+                </div>
+
+                <button id="reset-btn" class="reset-btn">Analyze Another</button>
+            </div>
+        </section>
+
+        <!-- Daily Tracker Card (Only this stays in center below upload) -->
+        <div id="dashboard-center-tracker" class="dash-card daily-tracker hidden">
+            <div class="card-header">
+                <h3>Daily Tracker</h3>
+                <span class="icon">🔥</span>
+            </div>
+            <div class="tracker-content">
+                <div class="calories-left">
+                    <span class="big-number" id="calories-left">0</span>
+                    <span class="label">Calories Left</span>
+                </div>
+                <div class="tracker-stats">
+                    <div class="stat">
+                        <span class="label">Goal</span>
+                        <span class="value" id="daily-goal">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Eaten</span>
+                        <span class="value" id="daily-eaten">0</span>
+                    </div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="calorie-progress-bar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History (Keep in center or move? User said 'others to sides', but history is part of upload flow usually. I'll keep it hidden in center for now or move to side. Let's keep in center bottom for now as it wasn't explicitly mentioned as dashboard card) -->
+        <section id="history-section" class="card hidden">
+            <h3>Your Predictions</h3>
+            <ul id="history-list" class="history-list"></ul>
+        </section>
+
+    </div>
+
+    <!-- Right Column: Gauge, Burn, Goals -->
+    <div id="dashboard-right" class="side-column hidden">
+        
+        <!-- Calorie Progress Gauge -->
+        <div class="dash-card gauge-card">
+            <div class="card-header">
+                <h3>Calorie Progress</h3>
+                <span class="icon">⚖️</span>
+            </div>
+            <div class="gauge-wrapper">
+                <div class="gauge-body">
+                    <div class="gauge-fill" id="calorie-progress"></div>
+                    <div class="gauge-cover">
+                        <span id="gauge-text">0%</span>
+                    </div>
+                </div>
+                <p class="gauge-subtext"><span id="gauge-current">0</span> / <span id="gauge-goal">2500</span> kcal</p>
+                <button class="small-btn">View History</button>
+            </div>
+        </div>
+
+        <!-- Nutrition Goals -->
+        <div class="dash-card goals-card">
+            <div class="card-header">
+                <h3>Nutrition Goals</h3>
+                <span class="icon">🎯</span>
+            </div>
+            <div class="macro-chart">
+                <div class="macro-bar">
+                    <div class="fill protein-fill" style="height: 50%"></div>
+                    <span>Pro</span>
+                </div>
+                <div class="macro-bar">
+                    <div class="fill carbs-fill" style="height: 70%"></div>
+                    <span>Carb</span>
+                </div>
+                <div class="macro-bar">
+                    <div class="fill fat-fill" style="height: 30%"></div>
+                    <span>Fat</span>
+                </div>
+                <div class="macro-bar">
+                    <div class="fill fiber-fill" style="height: 40%"></div>
+                    <span>Fib</span>
+                </div>
+            </div>
+            <button class="small-btn outline" id="edit-profile-btn">Set Goals</button>
+        </div>
+
+    </div>
+
+</main>
+
+<!-- Firebase SDKs (compat) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+<!-- your Firebase config -->
+<script src="firebase.js"></script>
+
+<!-- login & logout -->
+<!-- <script src="auth.js"></script> -->
+
+<!-- your app logic -->
+<script src="script.js"></script>
+<script src="chatbot.js"></script>
+
+<!-- Chatbot Widget (Auto-injected) -->
+<div id="chatbot-widget-container"></div>
+
+</body>
+</html>

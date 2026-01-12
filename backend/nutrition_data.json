@@ -1,0 +1,37 @@
+{
+  "pizza": {
+    "calories": 285,
+    "protein_g": 12,
+    "carbs_g": 36,
+    "fat_g": 10,
+    "serving_size": "1 slice"
+  },
+  "burger": {
+    "calories": 354,
+    "protein_g": 17,
+    "carbs_g": 29,
+    "fat_g": 17,
+    "serving_size": "1 burger"
+  },
+  "salad": {
+    "calories": 150,
+    "protein_g": 5,
+    "carbs_g": 10,
+    "fat_g": 10,
+    "serving_size": "1 bowl"
+  },
+  "pasta": {
+    "calories": 220,
+    "protein_g": 8,
+    "carbs_g": 43,
+    "fat_g": 1,
+    "serving_size": "1 cup"
+  },
+  "sushi": {
+    "calories": 45,
+    "protein_g": 2,
+    "carbs_g": 9,
+    "fat_g": 0.5,
+    "serving_size": "1 piece"
+  }
+}

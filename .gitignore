@@ -1,0 +1,9 @@
+# Ignore all Indian Food Images except chapati and paneer_butter_masala
+Indian Food Images/Indian Food Images/*
+!Indian Food Images/Indian Food Images/chapati/
+!Indian Food Images/Indian Food Images/paneer_butter_masala/
+
+# Keep common virtual env and Python artifacts ignored
+venv/
+__pycache__/
+*.pyc
